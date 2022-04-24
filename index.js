@@ -63,6 +63,57 @@ function unused(src, sourceType = "script") {
     }
 
     var handlers = {
+        ArrowFunctionExpression: function(node, context) {
+            maybe_set_id(node.id, context);
+            node.params.forEach(function(node) {
+                maybe_set_param(node, ctx);
+            });
+            exec(node.body, context);
+        },
+        ImportDeclaration: function(node, context) {
+            node.specifiers.forEach(function(node) {
+                exec(node, context)
+            });
+        },
+        ImportSpecifier: function(node, context) {
+            maybe_set_id(node.local, context);
+            if (node.imported != undefined) {
+                maybe_set_id(node.imported, context);
+            }
+        },
+        ImportDefaultSpecifier: function(node, context) {
+            maybe_set_id(node.local, context);
+            if (node.imported != undefined) {
+                maybe_set_id(node.imported, context);
+            }
+        },
+        ImportNamespaceSpecifier: function(node, context) {
+            maybe_set_id(node.local, context);
+            if (node.imported != undefined) {
+                maybe_set_id(node.imported, context);
+            }
+        },
+        ExportAllDeclaration: function(node, context) {
+            exec(node.source, context);
+        },
+        ExportDefaultDeclaration: function(node, context) {
+            exec(node.declaration, context);
+        },
+        ExportNamedDeclaration: function(node, context) {
+            exec(node.declaration, context);
+            exec(node.source, context);
+            node.specifiers.forEach(function(node) {
+                exec(node, context)
+            });
+        },
+        ExportSpecifier: function(node, context) {
+            exec(node.exported, context);
+            exec(node.local, context);
+        },
+        AssignmentPattern: function(node, context) {
+            exec(node.lef, context);
+            exec(node.right, context);
+        },
         VariableDeclaration: function(node, context) {
             node.declarations.forEach(function(node) {
                 exec(node, context)
