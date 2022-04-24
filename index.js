@@ -18,10 +18,16 @@ var esprima = require('esprima');
 var Context = require('./lib/context');
 
 // return a list of unused variables in the source
-function unused(src) {
-    var ast = esprima.parse(src, {
-        loc: true
-    });
+function unused(src, sourceType = "script") {
+    var ast;
+    if (sourceType === "script") {
+        ast = esprima.parseScript(src, { loc: true });
+    } else if (sourceType === "module") {
+        ast = esprima.parseModule(src, { loc: true });
+    } else {
+        throw new Error("Invalid sourceType. \
+            A file should either be a \"script\" or a \"module\".");
+    }
 
     // map of identifiers -> location
     // when an identifier is seen, it is removed from the map
