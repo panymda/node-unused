@@ -111,7 +111,7 @@ function unused(src, sourceType = "script") {
             exec(node.local, context);
         },
         AssignmentPattern: function(node, context) {
-            exec(node.lef, context);
+            exec(node.left, context);
             exec(node.right, context);
         },
         ObjectPattern: function(node, context) {
@@ -132,10 +132,10 @@ function unused(src, sourceType = "script") {
         },
         TryStatement: function(node, context) {
             exec(node.block, context);
-            if (node.handler != null) {
+            if (node.handler) {
                 exec(node.handler, context);
             }
-            if (node.finalizer != null) {
+            if (node.finalizer) {
                 exec(node.finalizer, context);
             }
         },
@@ -154,6 +154,15 @@ function unused(src, sourceType = "script") {
         TaggedTemplateExpression: function(node, context) {
             exec(node.tag, context);
             exec(node.quasi, context);
+        },
+        WithStatement: function(node, context) {
+            exec(node.object, context);
+            exec(node.body, context);
+        },
+        YieldExpression: function(node, context) {
+            if (node.argument) {
+                exec(node.argument, context);
+            }
         },
         ForOfStatement: function() {
         },
