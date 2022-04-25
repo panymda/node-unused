@@ -114,6 +114,55 @@ function unused(src, sourceType = "script") {
             exec(node.lef, context);
             exec(node.right, context);
         },
+        ObjectPattern: function(node, context) {
+            node.properties.forEach(function(node) {
+                exec(node, context)
+            });
+        },
+        TemplateLiteral: function(node, context) {
+            node.expressions.forEach(function(node) {
+                exec(node, context)
+            });
+        },
+        AwaitExpression: function(node, context) {
+            exec(node.argument, context);
+        },
+        SpreadElement: function(node, context) {
+            exec(node.argument, context);
+        },
+        TryStatement: function(node, context) {
+            exec(node.block, context);
+            if (node.handler != null) {
+                exec(node.handler, context);
+            }
+            if (node.finalizer != null) {
+                exec(node.finalizer, context);
+            }
+        },
+        ArrayPattern: function(node, context) {
+            node.elements.forEach(function(node) {
+                exec(node, context)
+            });
+        },
+        RestElement: function(node, context) {
+            exec(node.argument, context);
+        },
+        LabeledStatement: function(node, context) {
+            maybe_set_id(node.label, context);
+            exec(node.body, context);
+        },
+        TaggedTemplateExpression: function(node, context) {
+            exec(node.tag, context);
+            exec(node.quasi, context);
+        },
+        ForOfStatement: function() {
+        },
+        ForInStatement: function() {
+        },
+        ClassDeclaration: function() {
+        },
+        ClassExpression: function() {
+        },
         VariableDeclaration: function(node, context) {
             node.declarations.forEach(function(node) {
                 exec(node, context)
@@ -189,15 +238,6 @@ function unused(src, sourceType = "script") {
         BinaryExpression: function(node, context) {
             exec(node.left, context);
             exec(node.right, context);
-        },
-        TryStatement: function(node, context) {
-            node.block.body.forEach(function(node) {
-                exec(node, context);
-            });
-
-            node.handlers.forEach(function(node) {
-                exec(node, context);
-            });
         },
         CatchClause: function(node, context) {
             exec(node.param, context);
